@@ -31,6 +31,6 @@ A robust Point of Sale (POS) system built with Django for managing pharmacy oper
 ## Installation
 1. **Clone the Repository**:
    ```bash
-   git clone <your-repo-url>
+   git clone <https://github.com/Ekipchirchir/pharmacy-pos.git>
    cd pharmacy_pos
 <img width="1920" height="1080" alt="Screenshot (96)" src="https://github.com/user-attachments/assets/632ed4b2-0943-468c-a8cc-46ca79d352da" />
