@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="fade-in">
+    <!-- Summary Section -->
+    <div class="bg-white p-6 rounded-lg shadow-lg mb-6 border-l-4 border-[#1E3A8A]">
+        <h3 class="text-xl font-semibold text-gray-700">Quick Summary</h3>
+        <div class="grid grid-cols-2 gap-4 mt-4 text-sm">
+            <p><span class="font-medium">Total Drugs:</span> {{ total_drugs }}</p>
+            <p><span class="font-medium">Low Stock:</span> {{ low_stock }}</p>
+            <p><span class="font-medium">Near Expiry:</span> {{ near_expiry }}</p>
+            <p><span class="font-medium">Total Sales:</span> {{ total_sales }}</p>
+            <p><span class="font-medium">Total Suppliers:</span> {{ total_suppliers }}</p>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-l-4 border-[#1E3A8A]">
+            <h3 class="text-lg font-semibold text-gray-700">Total Drugs</h3>
+            <p class="text-4xl font-bold text-[#1E3A8A] mt-2">{{ total_drugs }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-l-4 border-yellow-500">
+            <h3 class="text-lg font-semibold text-gray-700">Low Stock</h3>
+            <p class="text-4xl font-bold text-yellow-600 mt-2">{{ low_stock }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-l-4 border-red-500">
+            <h3 class="text-lg font-semibold text-gray-700">Near Expiry</h3>
+            <p class="text-4xl font-bold text-red-600 mt-2">{{ near_expiry }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-l-4 border-green-500">
+            <h3 class="text-lg font-semibold text-gray-700">Total Sales</h3>
+            <p class="text-4xl font-bold text-green-600 mt-2">{{ total_sales }}</p>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 border-l-4 border-blue-500">
+            <h3 class="text-lg font-semibold text-gray-700">Total Suppliers</h3>
+            <p class="text-4xl font-bold text-blue-600 mt-2">{{ total_suppliers }}</p>
+        </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h3 class="text-xl font-semibold text-gray-700 mb-4">Recent Sales (Last 7 Days)</h3>
+        <canvas id="salesChart" width="400" height="200"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ sales_data.labels|safe }},
+            datasets: [{
+                label: 'Sales Amount (KES)',
+                data: {{ sales_data.data|safe }},
+                backgroundColor: 'rgba(30, 58, 138, 0.7)',
+                borderColor: 'rgba(30, 58, 138, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Amount (KES)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

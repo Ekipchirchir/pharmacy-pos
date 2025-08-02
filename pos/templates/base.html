@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1E3A8A 0%, #2b4b9f 100%);
+            color: #ffffff;
+            height: 100%;
+            position: fixed;
+            transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+        .sidebar.collapsed {
+            width: 80px;
+            transform: translateX(0);
+        }
+        .sidebar.collapsed .nav-item span {
+            display: none;
+        }
+        .sidebar.collapsed .nav-item i {
+            margin-right: 0;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            margin: 8px 0;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            font-size: 1rem;
+        }
+        .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .nav-item.active {
+            background-color: rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+        }
+        .content {
+            margin-left: 260px;
+            transition: margin-left 0.3s ease-in-out;
+            padding: 20px;
+            overflow-y: auto;
+            min-height: 100vh;
+        }
+        .sidebar.collapsed + .content {
+            margin-left: 80px;
+        }
+        .header {
+            background: linear-gradient(90deg, #1E3A8A, #2b4b9f);
+            color: #ffffff;
+            padding: 15px 30px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .header .user-info a {
+            color: #ffffff;
+            text-decoration: underline;
+            transition: color 0.3s;
+        }
+        .header .user-info a:hover {
+            color: #d1fae5;
+        }
+        .message {
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-260px);
+            }
+            .sidebar.collapsed {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 10px;
+            }
+            .sidebar + .content {
+                margin-left: 0;
+            }
+            .header {
+                padding: 10px 20px;
+            }
+            .nav-item {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        @media (max-width: 640px) {
+            .header h3 {
+                font-size: 1.2rem;
+            }
+            .header .user-info span, .header .user-info a {
+                font-size: 0.9rem;
+            }
+            .message {
+                padding: 8px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="flex flex-col h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar h-full z-50" id="sidebar">
+        <div class="p-4 text-center border-b border-white/20">
+            <div class="w-16 h-16 mx-auto bg-white/10 rounded-full flex items-center justify-center mb-4">
+                <span class="text-2xl font-bold text-white">P</span>
+            </div>
+            <h2 class="text-xl font-semibold">Pharmacy POS</h2>
+        </div>
+        <nav class="mt-6">
+            <a href="{% url 'dashboard' %}" class="nav-item {% if request.path == '/' %}active{% endif %}">
+                <i class="fas fa-tachometer-alt mr-4"></i><span>Dashboard</span>
+            </a>
+            <a href="{% url 'inventory' %}" class="nav-item {% if request.path == '/inventory/' %}active{% endif %}">
+                <i class="fas fa-boxes mr-4"></i><span>Inventory</span>
+            </a>
+            <a href="{% url 'sales' %}" class="nav-item {% if request.path == '/sales/' %}active{% endif %}">
+                <i class="fas fa-cash-register mr-4"></i><span>Sales</span>
+            </a>
+            <a href="{% url 'suppliers' %}" class="nav-item {% if request.path == '/suppliers/' %}active{% endif %}">
+                <i class="fas fa-truck mr-4"></i><span>Suppliers</span>
+            </a>
+            <a href="{% url 'reports' %}" class="nav-item {% if request.path == '/reports/' %}active{% endif %}">
+                <i class="fas fa-chart-bar mr-4"></i><span>Reports</span>
+            </a>
+            <a href="{% url 'settings' %}" class="nav-item {% if request.path == '/settings/' %}active{% endif %}">
+                <i class="fas fa-cog mr-4"></i><span>Settings</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content" id="main-content">
+        <header class="header mb-6">
+            <button id="toggle-sidebar" class="text-white focus:outline-none md:hidden">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <h3 class="text-white">{% block title %}Welcome{% endblock %}</h3>
+            <div class="user-info flex items-center space-x-4">
+                <span class="text-white">Logged in as: {{ request.user.username }}</span>
+                <a href="{% url 'admin:logout' %}" class="text-white hover:text-green-200">Logout</a>
+            </div>
+        </header>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message mb-4 p-4 text-white rounded-lg {% if message.tags == 'success' %}bg-green-600{% elif message.tags == 'error' %}bg-red-600{% else %}bg-gray-600{% endif %} shadow-md">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        <div class="fade-in">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    <script>
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+        const toggleSidebar = document.getElementById('toggle-sidebar');
+
+        toggleSidebar.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            if (window.innerWidth <= 1024) {
+                sidebar.classList.toggle('transform');
+                sidebar.classList.toggle('-translate-x-full');
+                mainContent.classList.toggle('ml-0');
+            } else {
+                mainContent.classList.toggle('ml-80');
+            }
+        });
+
+        document.querySelectorAll('.nav-item').forEach(link => {
+            if (link.href === window.location.href) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>

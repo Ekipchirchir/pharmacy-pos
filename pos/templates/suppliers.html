@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Suppliers{% endblock %}
+{% block content %}
+<div class="fade-in">
+    <h2 class="text-2xl font-bold mb-4 text-[#1E3A8A]">Supplier Management</h2>
+    <button class="mb-4 bg-[#1E3A8A] text-white p-2 rounded hover:bg-[#2b4b9f]" onclick="document.getElementById('add-supplier').style.display='block'">Add Supplier</button>
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-[#1E3A8A] text-white">
+                    <th class="p-2">Name</th>
+                    <th class="p-2">Contact</th>
+                    <th class="p-2">Phone</th>
+                    <th class="p-2">Email</th>
+                    <th class="p-2">Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for supplier in suppliers %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ supplier.name }}</td>
+                        <td class="p-2">{{ supplier.contact_person }}</td>
+                        <td class="p-2">{{ supplier.phone }}</td>
+                        <td class="p-2">{{ supplier.email }}</td>
+                        <td class="p-2">{{ supplier.address }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="add-supplier" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold mb-4">Add New Supplier</h3>
+            <form method="POST" action="{% url 'suppliers' %}">
+                {% csrf_token %}
+                <input type="text" name="name" placeholder="Name" class="w-full p-2 mb-2 border rounded" required>
+                <input type="text" name="contact_person" placeholder="Contact Person" class="w-full p-2 mb-2 border rounded" required>
+                <input type="text" name="phone" placeholder="Phone" class="w-full p-2 mb-2 border rounded" required>
+                <input type="email" name="email" placeholder="Email" class="w-full p-2 mb-2 border rounded" required>
+                <textarea name="address" placeholder="Address" class="w-full p-2 mb-2 border rounded" required></textarea>
+                <button type="submit" class="bg-[#1E3A8A] text-white p-2 rounded hover:bg-[#2b4b9f]">Save</button>
+                <button type="button" class="ml-2 bg-gray-500 text-white p-2 rounded hover:bg-gray-700" onclick="this.parentElement.parentElement.style.display='none'">Cancel</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelectorAll('#add-supplier button[type="button"]').forEach(btn => {
+        btn.addEventListener('click', () => document.getElementById('add-supplier').style.display = 'none');
+    });
+</script>
+{% endblock %}

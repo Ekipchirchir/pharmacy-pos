@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}Sales{% endblock %}
+{% block content %}
+<div class="fade-in">
+    <h2 class="text-2xl font-bold mb-4 text-[#1E3A8A]">Sales Processing</h2>
+    <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+        <input type="text" id="search" placeholder="Search drugs..." class="w-full p-2 mb-4 border rounded" oninput="filterDrugs()">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="drug-list">
+            {% for drug in drugs %}
+                <div class="p-4 bg-gray-50 rounded-lg shadow cursor-pointer hover:bg-gray-100" onclick="addToCart({{ drug.id }}, '{{ drug.name }}', {{ drug.price }})">
+                    <p><strong>{{ drug.name }}</strong></p>
+                    <p>Batch: {{ drug.batch_number }}</p>
+                    <p>Price: KES {{ drug.price }}</p>
+                    <p>Stock: {{ drug.quantity }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <h3 class="text-lg font-semibold mb-2">Cart</h3>
+        <div id="cart-items">
+            <p>No items in cart.</p>
+        </div>
+        <p class="font-bold mt-2" id="cart-total">Total: KES 0</p>
+        <input type="text" id="customer_name" placeholder="Customer Name" class="w-full p-2 mt-4 border rounded">
+        <input type="text" id="phone_number" placeholder="M-Pesa Phone Number" class="w-full p-2 mt-2 border rounded">
+        <input type="text" id="prescription_number" placeholder="Prescription Number" class="w-full p-2 mt-2 border rounded">
+        <button class="mt-4 w-full bg-[#1E3A8A] text-white p-2 rounded hover:bg-[#2b4b9f]" onclick="processSale()">Process Sale</button>
+    </div>
+</div>
+<script>
+    let cart = [];
+    function addToCart(drugId, name, price) {
+        const existingItem = cart.find(item => item.drugId === drugId);
+        if (existingItem) existingItem.quantity += 1;
+        else cart.push({ drugId, name, price, quantity: 1 });
+        updateCart();
+    }
+    function updateCart() {
+        const cartItems = document.getElementById('cart-items');
+        if (cart.length === 0) cartItems.innerHTML = '<p>No items in cart.</p>';
+        else cartItems.innerHTML = cart.map(item => `
+            <div class="flex justify-between mb-2">
+                <p>${item.name} x <input type="number" class="quantity w-16" value="${item.quantity}" min="1" onchange="updateQuantity(${item.drugId}, this.value)"></p>
+                <p>KES ${item.price * item.quantity}</p>
+            </div>
+        `).join('');
+        document.getElementById('cart-total').textContent = `Total: KES ${cart.reduce((sum, item) => sum + item.price * item.quantity, 0)}`;
+    }
+    function updateQuantity(drugId, quantity) {
+        const item = cart.find(item => item.drugId === drugId);
+        if (item) item.quantity = parseInt(quantity);
+        updateCart();
+    }
+    function filterDrugs() {
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        const drugs = document.querySelectorAll('#drug-list > div');
+        drugs.forEach(drug => {
+            const name = drug.querySelector('p strong').textContent.toLowerCase();
+            drug.style.display = name.includes(searchTerm) ? '' : 'none';
+        });
+    }
+    async function processSale() {
+        const items = cart.map(item => ({
+            drug_id: item.drugId,
+            quantity: item.quantity,
+            subtotal: item.price * item.quantity
+        }));
+        const phoneNumber = document.getElementById('phone_number').value;
+        const customerName = document.getElementById('customer_name').value;
+        const prescriptionNumber = document.getElementById('prescription_number').value;
+        const response = await fetch('/sales/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({items, phone_number: phoneNumber, customer_name: customerName, prescription_number: prescriptionNumber})
+        });
+        const result = await response.json();
+        alert(result.message || result.error);
+        if (response.ok) location.reload();
+    }
+</script>
+{% endblock %}

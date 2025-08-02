@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Inventory{% endblock %}
+{% block content %}
+<div class="fade-in">
+    <h2 class="text-2xl font-bold mb-4 text-[#1E3A8A]">Inventory Management</h2>
+    {% if expiry_alerts %}
+        <div class="bg-yellow-100 p-4 rounded-lg mb-4">
+            <h3 class="font-semibold">Expiry Alerts</h3>
+            <ul>
+                {% for drug in expiry_alerts %}
+                    <li>{{ drug.name }} (Batch: {{ drug.batch_number }}) expires on {{ drug.expiry_date }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    <div class="bg-white p-4 rounded-lg shadow-md">
+        <input type="text" id="search" placeholder="Search drugs..." class="w-full p-2 mb-4 border rounded" oninput="filterDrugs()">
+        <table class="w-full text-left">
+            <thead>
+                <tr class="bg-[#1E3A8A] text-white">
+                    <th class="p-2">Name</th>
+                    <th class="p-2">Supplier</th>
+                    <th class="p-2">Batch</th>
+                    <th class="p-2">Qty</th>
+                    <th class="p-2">Price (KES)</th>
+                    <th class="p-2">Expiry</th>
+                    <th class="p-2">Category</th>
+                </tr>
+            </thead>
+            <tbody id="drug-table">
+                {% for drug in drugs %}
+                    <tr class="border-b">
+                        <td class="p-2">{{ drug.name }}</td>
+                        <td class="p-2">{{ drug.supplier.name|default:"N/A" }}</td>
+                        <td class="p-2">{{ drug.batch_number }}</td>
+                        <td class="p-2">{{ drug.quantity }}</td>
+                        <td class="p-2">{{ drug.price }}</td>
+                        <td class="p-2">{{ drug.expiry_date }}</td>
+                        <td class="p-2">{{ drug.category }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    function filterDrugs() {
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        const rows = document.querySelectorAll('#drug-table tr');
+        rows.forEach(row => {
+            const name = row.cells[0].textContent.toLowerCase();
+            row.style.display = name.includes(searchTerm) ? '' : 'none';
+        });
+    }
+</script>
+{% endblock %}
