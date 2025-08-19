@@ -1,6 +1,5 @@
 # Pharmacy POS System
-
-A robust Point of Sale (POS) system built with Django for managing pharmacy operations, including inventory, sales, suppliers, and reports. This system is designed for Kenyan pharmacies with features like expiry tracking, simulated M-Pesa integration, and KRA eTIMS compliance.
+Robust Point of Sale (POS) system built with Django for managing pharmacy operations, including inventory, sales, suppliers, and reports. This system is designed for Kenyan pharmacies with features like expiry tracking, simulated M-Pesa integration, and KRA eTIMS compliance.
 
 <img width="1920" height="1080" alt="Screenshot (96)" src="https://github.com/user-attachments/assets/632ed4b2-0943-468c-a8cc-46ca79d352da" />
 
